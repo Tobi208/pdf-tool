@@ -142,6 +142,7 @@ def get_range(s: str):
     Parses a string containing a single number or
     two numbers connected with a dash to a range.
     Single numbers produce a range too.
+    Range must span at least 1 index.
 
     ValueError is handled else where.
 
@@ -152,9 +153,13 @@ def get_range(s: str):
         x = s.split('-')
         if len(x) != 2:
             raise ValueError
-        return range(int(x[0]) - 1, int(x[1]))
+        r = range(int(x[0]) - 1, int(x[1]))
     else:
-        return range(int(s) - 1, int(s))
+        r = range(int(s) - 1, int(s))
+    if len(r) < 1:
+        raise ValueError
+    else:
+        return r
 
 
 def delete():
