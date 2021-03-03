@@ -1,9 +1,11 @@
 import os
 import sys
+from typing import List
+
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
-def parse_args(args):
+def parse_args(args: List[str]):
     """
     <action> <file1> <further mandatory and or optional args>
 
@@ -13,6 +15,9 @@ def parse_args(args):
     :param args: user args as <action> <file1> and optional args
     :return: tuple of parsed arguments
     """
+    if not all(map(lambda s: type(s) == str, args)):
+        print('List of strings required!')
+        return
     # <action> <file1> are mandatory
     if len(args) < 2:
         print('Missing <action> and/or <file1>!')
