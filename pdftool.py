@@ -78,6 +78,9 @@ def parse_args(args):
             if len(ts) not in [1, 2]:
                 print('Too many or too little index or range arguments for: ' + filei + '!')
                 return
+            if len(ts[0]) > 1:
+                print('File:' + filei + ' has to be followed by a single index!')
+                return
             i = j
             tss.append(ts)
         return file1, tss
