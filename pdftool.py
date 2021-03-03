@@ -105,7 +105,7 @@ def parse_args(args):
             if not verify_file(filei):
                 return
             # for each file exactly 1 index or range may be passed
-            if not xs[i + 1].endswith('.pdf'):
+            if i < len(xs) - 1 and not xs[i + 1].endswith('.pdf'):
                 try:
                     ts.append((filei, get_range(xs[i + 1])))
                 except ValueError:
