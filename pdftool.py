@@ -130,6 +130,7 @@ def parse_args(args: List[str]):
         if all(map(verify_file, xs)):
             return xs
         else:
+            print('Purge only accepts list of files')
             return
 
 
