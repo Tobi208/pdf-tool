@@ -44,7 +44,17 @@ class TestPDFTool(unittest.TestCase):
         """
         Test input for delete, extract, split
         """
-        pass
+        self.assertFalse(pa(['delete', 'file1.pdf']), 'missing range')
+        self.assertFalse(pa(['extract', 'file2.pdf']), 'missing range')
+        self.assertFalse(pa(['split', 'file3.pdf']), 'missing range')
+        self.assertFalse(pa(['delete', 'notafile.pdf', '1']), 'invalid file')
+        self.assertFalse(pa(['extract', 'notafile.pdf', '1']), 'invalid file')
+        self.assertFalse(pa(['split', 'notafile.pdf', '1']), 'invalid file')
+        # general parse_args, verify_file and get_range related tests not covered here
+        # if the first three args hold, the error can only lie somewhere else
+        self.assertEqual(pa(['delete', 'file1.pdf', '5']), ('file1.pdf', [range(4, 5)]))
+        self.assertEqual(pa(['extract', 'file1.pdf', '1-5']), ('file1.pdf', [range(0, 5)]))
+        self.assertEqual(pa(['split', 'file1.pdf', '1-5', '10']), ('file1.pdf', [range(0, 5), range(9, 10)]))
 
     def test_pa_insert(self):
         """
