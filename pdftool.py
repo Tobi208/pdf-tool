@@ -70,11 +70,12 @@ def parse_args(args):
             ts = [filei]
             # iterate once or twice further to get <i> or <i> <j-k>
             j = i + 1
-            while not xs[j].endswith('.pdf'):
+            while j < len(xs) and not xs[j].endswith('.pdf'):
                 try:
                     ts.append(get_range(xs[j]))
                 except ValueError:
                     print('Expected format for indices or ranges: i or i-j!')
+                j += 1
             if len(ts) not in [1, 2]:
                 print('Too many or too little index or range arguments for: ' + filei + '!')
                 return
