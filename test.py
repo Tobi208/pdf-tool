@@ -114,8 +114,12 @@ class TestPDFTool(unittest.TestCase):
     def test_pa_purge(self):
         """
         Test input for purge
+        General parse_args, verify_file and get_range related tests not covered here
         """
-        pass
+        self.assertFalse(pa(['purge', 'file1.pdf', '1']), 'invalid file')
+        self.assertFalse(pa(['purge', 'file1.pdf', '1', 'file2.pdf']), 'invalid file')
+        self.assertEqual(pa(['purge', 'file1.pdf']), ['file1.pdf'])
+        self.assertEqual(pa(['purge', 'file1.pdf', 'file2.pdf']), ['file1.pdf', 'file2.pdf'])
 
 
 if __name__ == '__main__':
