@@ -70,7 +70,7 @@ def parse_args(args):
             ts = [filei]
             # iterate once or twice further to get <i> or <i> <j-k>
             j = i + 1
-            while not xs[j].endwith('.pdf'):
+            while not xs[j].endswith('.pdf'):
                 try:
                     ts.append(get_range(xs[j]))
                 except ValueError:
