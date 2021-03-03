@@ -76,11 +76,11 @@ def parse_args(args):
                 except ValueError:
                     print('Expected format for indices or ranges: i or i-j!')
                 j += 1
-            if len(ts) not in [1, 2]:
+            if len(ts) not in [2, 3]:
                 print('Too many or too little index or range arguments for: ' + filei + '!')
                 return
-            if len(ts[0]) > 1:
-                print('File:' + filei + ' has to be followed by a single index!')
+            if len(ts[1]) > 1:
+                print('File: ' + filei + ' has to be followed by a single index!')
                 return
             i = j
             tss.append(ts)
