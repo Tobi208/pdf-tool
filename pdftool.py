@@ -153,13 +153,14 @@ def get_range(s: str):
         x = s.split('-')
         if len(x) != 2:
             raise ValueError
-        r = range(int(x[0]) - 1, int(x[1]))
+        i = int(x[0]) - 1
+        j = int(x[1])
     else:
-        r = range(int(s) - 1, int(s))
-    if len(r) < 1:
+        i = int(s) - 1
+        j = int(s)
+    if i >= j or i < 0 or j < 1:
         raise ValueError
-    else:
-        return r
+    return range(i, j)
 
 
 def delete():
