@@ -59,8 +59,36 @@ class TestPDFTool(unittest.TestCase):
     def test_pa_insert(self):
         """
         Test input for insert
+        General parse_args, verify_file and get_range related tests not covered here
         """
-        pass
+        self.assertFalse(pa(['insert', 'file1.pdf']), 'missing file')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf']), 'missing pos')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '1-5']), 'missing pos')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', 'file3.pdf']), 'missing pos')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '2', 'file3.pdf']), 'missing pos')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf']), 'missing pos')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf', '3-6']), 'missing pos')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '5-10', '2']), 'pos is range > 1')
+        self.assertFalse(pa(['insert', 'file1.pdf', '1', 'file2.pdf']), 'pos instead of file')
+        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '1', '2', '3']), 'too many pos')
+        self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '1']),
+                         ('file1.pdf', [['file2.pdf', range(0, 1)]]))
+        self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '1', '5']),
+                         ('file1.pdf', [['file2.pdf', range(0, 1), range(4, 5)]]))
+        self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5']),
+                         ('file1.pdf', [['file2.pdf', range(9, 10), range(0, 5)]]))
+        self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', 'file2.pdf', '3']),
+                         ('file1.pdf', [['file2.pdf', range(9, 10)],
+                                        ['file2.pdf', range(2, 3)]]))
+        self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5', 'file2.pdf', '3']),
+                         ('file1.pdf', [['file2.pdf', range(9, 10), range(0, 5)],
+                                        ['file2.pdf', range(2, 3)]]))
+        self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5', 'file2.pdf', '3', '10-15']),
+                         ('file1.pdf', [['file2.pdf', range(9, 10), range(0, 5)],
+                                        ['file2.pdf', range(2, 3), range(9, 15)]]))
+        self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', 'file2.pdf', '3', '10-15']),
+                         ('file1.pdf', [['file2.pdf', range(9, 10)],
+                                        ['file2.pdf', range(2, 3), range(9, 15)]]))
 
     def test_pa_merge(self):
         """
