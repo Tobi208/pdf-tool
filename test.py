@@ -35,6 +35,7 @@ class TestPDFTool(unittest.TestCase):
         General parse_args test for first two arguments
         """
         self.assertFalse(pa([]), 'empty arguements')
+        self.assertFalse(pa(['split', 'file1.pdf', '1', 1]), 'not list of strings')
         self.assertFalse(pa(['file1.pdf']), 'missing action')
         self.assertFalse(pa(['split']), 'missing file')
         self.assertFalse(pa(['explode', 'file1.pdf']), 'invalid action')
