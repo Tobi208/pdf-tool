@@ -92,8 +92,23 @@ class TestPDFTool(unittest.TestCase):
     def test_pa_merge(self):
         """
         Test input for merge
+        General parse_args, verify_file and get_range related tests not covered here
         """
-        pass
+        self.assertFalse(pa(['merge', 'file1.pdf']), 'missing file')
+        self.assertFalse(pa(['merge', 'file1.pdf', '1']), 'missing file')
+        self.assertFalse(pa(['merge', 'file1.pdf', '1', '2', 'file2.pdf']), 'too many indices/ranges')
+        self.assertEqual(pa(['merge', 'file1.pdf', 'file2.pdf']),
+                         [('file1.pdf', None), ('file2.pdf', None)])
+        self.assertEqual(pa(['merge', 'file1.pdf', '5', 'file2.pdf']),
+                         [('file1.pdf', range(4, 5)), ('file2.pdf', None)])
+        self.assertEqual(pa(['merge', 'file1.pdf', 'file2.pdf', '10']),
+                         [('file1.pdf', None), ('file2.pdf', range(9, 10))])
+        self.assertEqual(pa(['merge', 'file1.pdf', '1-15', 'file2.pdf']),
+                         [('file1.pdf', range(0, 15)), ('file2.pdf', None)])
+        self.assertEqual(pa(['merge', 'file1.pdf', '1-15', 'file2.pdf', '100-200']),
+                         [('file1.pdf', range(0, 15)), ('file2.pdf', range(99, 200))])
+        self.assertEqual(pa(['merge', 'file1.pdf', 'file2.pdf', '100-200']),
+                         [('file1.pdf', None), ('file2.pdf', range(99, 200))])
 
     def test_pa_purge(self):
         """
