@@ -28,9 +28,11 @@ def parse_args(args: List[str]):
         return
     # list of arguments after action
     xs = args[1:]
+    # list of necessary files
+    files = []
     # main file
     file1 = xs[0]
-    if not verify_file(file1):
+    if not verify_file(file1, files):
         return
 
     if action in ['delete', 'extract', 'split']:
@@ -49,7 +51,7 @@ def parse_args(args: List[str]):
         except ValueError:
             print('Expected format for indices or ranges: i or i-j!')
             return
-        return file1, rs
+        return files, file1, rs
 
     if action == 'insert':
         """
@@ -70,7 +72,7 @@ def parse_args(args: List[str]):
         while i < len(xs):
             # file marks start of a tuple
             filei = xs[i]
-            if not verify_file(filei):
+            if not verify_file(filei, files):
                 return
             ts = [filei]
             # iterate once or twice further to get <i> or <i> <j-k>
@@ -89,7 +91,7 @@ def parse_args(args: List[str]):
                 return
             i = j
             tss.append(ts)
-        return file1, tss
+        return files, file1, tss
 
     if action == 'merge':
         """
@@ -99,7 +101,7 @@ def parse_args(args: List[str]):
         optionally which ranges of those files should be merged.
         Single pages <i> or ranges of pages <j-k>.
         """
-        if len(xs) < 2 or (len(xs) == 2 and not verify_file(xs[1])):
+        if len(xs) < 2 or (len(xs) == 2 and not verify_file(xs[1], [])):
             print('Missing files!')
             return
         i = 0
@@ -107,7 +109,7 @@ def parse_args(args: List[str]):
         ts = []
         while i < len(xs):
             filei = xs[i]
-            if not verify_file(filei):
+            if not verify_file(filei, files):
                 return
             # for each file exactly 1 index or range may be passed
             if i < len(xs) - 1 and not xs[i + 1].endswith('.pdf'):
@@ -119,7 +121,7 @@ def parse_args(args: List[str]):
             else:
                 ts.append((filei, None))
                 i += 1
-        return ts
+        return files, ts
 
     if action == 'purge':
         """
@@ -127,23 +129,25 @@ def parse_args(args: List[str]):
         
         purge accepts a list of files
         """
-        if all(map(verify_file, xs)):
-            return xs
+        if all(map(lambda x: verify_file(x, files), xs)):
+            return files, xs
         else:
             print('Purge only accepts list of files')
             return
 
 
-def verify_file(file):
+def verify_file(file, files):
     """
-    Checks if a file exists in the current folder
+    Checks if a file exists in the current folder and appends it to collection
 
     :param file: file to be checked for existence
+    :param files: list of files file should be appended to if it exists
     :return: if file exists
     """
     if not os.path.isfile(file):
         print('File not found: ' + file + '!')
         return False
+    files.append(file)
     return True
 
 
