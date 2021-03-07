@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List
+from typing import List, Dict
 
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
@@ -175,6 +175,21 @@ def get_range(s: str):
     if i >= j or i < 0 or j < 1:
         raise ValueError
     return range(i, j)
+
+
+def get_filereaders(fs: List[str]) -> Dict[str, PdfFileReader]:
+    """
+    Aquire a map of file names to corresponding file readers
+
+    :param fs: list of files, may contain duplicates
+    :return: map of file names to corresponding file readers
+    """
+    files = {}
+    # can not use dict comprehension, because making identical readers is slow
+    for f in fs:
+        if f not in files:
+            files[f] = PdfFileReader(open(f, 'br'))
+    return files
 
 
 def delete():
