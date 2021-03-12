@@ -166,6 +166,28 @@ class TestPDFTool(unittest.TestCase):
         self.assertEqual(extract(page_nums, 'file2.pdf', [range(30, 31)]),
                          [[('file2.pdf', [30])]])
 
+    def test_insert(self):
+        """
+        Test file & range logic of insert
+        """
+        page_nums = {'file1.pdf': 16, 'file2.pdf': 32, 'file3.pdf': 1}
+        self.assertEqual(insert(page_nums, 'file1.pdf', [('file3.pdf', 8, None)]),
+                         [[('file1.pdf', list(range(8))),
+                           ('file3.pdf', [0]),
+                           ('file1.pdf', list(range(8, 16)))]])
+        self.assertEqual(insert(page_nums, 'file1.pdf', [('file3.pdf', 8, range(0, 1))]),
+                         [[('file1.pdf', list(range(8))),
+                           ('file3.pdf', [0]),
+                           ('file1.pdf', list(range(8, 16)))]])
+        self.assertEqual(insert(page_nums, 'file1.pdf',
+                                [('file2.pdf', 5, range(16)),
+                                 ('file2.pdf', 10, range(16, 32))]),
+                         [[('file1.pdf', list(range(5))),
+                           ('file2.pdf', list(range(16))),
+                           ('file1.pdf', list(range(5, 10))),
+                           ('file2.pdf', list(range(16, 32))),
+                           ('file1.pdf', list(range(10, 16)))]])
+
     def test_merge(self):
         """
         Test file & range logic of merge

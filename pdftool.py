@@ -220,8 +220,27 @@ def extract(page_nums: {str, int}, file1: str, rs: [range]) -> [[(str, [int])]]:
     return [[(file1, retain)]]
 
 
-def insert():
-    pass
+def insert(page_nums: {str, int}, file1: str, tss: [(str, int, range)]):
+    """
+    Compile assembly instructions for page insertions
+
+    :param page_nums: dict of number of pages of all files
+    :param file1: file to extract pages from
+    :param tss: collection of files, their indices to be inserted at in file1 and which pages
+    :return: assembly instructions
+    """
+    tss = [(file, i, list(r)) if r else (file, i, list(range(page_nums[file])))
+           for (file, i, r) in tss]
+
+    instructions = []
+    j = 0
+    for file, i, r in tss:
+        instructions.append((file1, list(range(j, i))))
+        instructions.append((file, r))
+        j = i
+    instructions.append((file1, list(range(j, page_nums[file1]))))
+
+    return [instructions]
 
 
 def merge(page_nums: {str, int}, ts: [(str, range)]) -> [[(str, [int])]]:
