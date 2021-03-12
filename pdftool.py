@@ -1,10 +1,9 @@
 import os
 import sys
-from typing import List, Dict, Tuple
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
-def parse_args(args: List[str]):
+def parse_args(args: [str]):
     """
     <action> <file1> <further mandatory and or optional args>
 
@@ -135,7 +134,7 @@ def parse_args(args: List[str]):
             return
 
 
-def verify_file(file, files):
+def verify_file(file: str, files: [str]) -> bool:
     """
     Checks if a file exists in the current folder and appends it to collection
 
@@ -176,7 +175,7 @@ def get_range(s: str):
     return range(i, j)
 
 
-def get_filereaders(fs: List[str]) -> Dict[str, PdfFileReader]:
+def get_filereaders(fs: [str]) -> {str, PdfFileReader}:
     """
     Aquire a map of file names to corresponding file readers
 
@@ -191,7 +190,7 @@ def get_filereaders(fs: List[str]) -> Dict[str, PdfFileReader]:
     return files
 
 
-def delete(page_nums: Dict[str, int], file1: str, rs: List[range]) -> List[List[Tuple[str, List[int]]]]:
+def delete(page_nums: {str, int}, file1: str, rs: [range]) -> [[(str, [int])]]:
     """
     Compile assembly instructions for page deletion
 
@@ -226,7 +225,7 @@ def split():
     pass
 
 
-def assemble(filereaders: Dict[str, PdfFileReader], all_instructions: List[List[Tuple[str, List[int]]]]):
+def assemble(filereaders: {str, PdfFileReader}, all_instructions: [[(str, [int])]]):
     """
     Assemble all files given a list of instructions for each file
 
