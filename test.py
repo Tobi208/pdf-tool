@@ -80,20 +80,16 @@ class TestPDFTool(unittest.TestCase):
                          (['file1.pdf', 'file2.pdf'], 'file1.pdf', [['file2.pdf', range(9, 10), range(0, 5)]]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', 'file2.pdf', '3']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10)],
-                           ['file2.pdf', range(2, 3)]]))
+                          [['file2.pdf', range(9, 10)], ['file2.pdf', range(2, 3)]]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5', 'file2.pdf', '3']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10), range(0, 5)],
-                           ['file2.pdf', range(2, 3)]]))
+                          [['file2.pdf', range(9, 10), range(0, 5)], ['file2.pdf', range(2, 3)]]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5', 'file2.pdf', '3', '10-15']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10), range(0, 5)],
-                           ['file2.pdf', range(2, 3), range(9, 15)]]))
+                          [['file2.pdf', range(9, 10), range(0, 5)], ['file2.pdf', range(2, 3), range(9, 15)]]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', 'file2.pdf', '3', '10-15']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10)],
-                           ['file2.pdf', range(2, 3), range(9, 15)]]))
+                          [['file2.pdf', range(9, 10)], ['file2.pdf', range(2, 3), range(9, 15)]]))
 
     def test_pa_merge(self):
         """
@@ -115,9 +111,8 @@ class TestPDFTool(unittest.TestCase):
                          (['file1.pdf', 'file1.pdf', 'file2.pdf'],
                           [('file1.pdf', range(0, 15)), ('file2.pdf', range(99, 200))]))
         self.assertEqual(pa(['merge', 'file1.pdf', 'file2.pdf', '100-200']),
-                         (
-                             ['file1.pdf', 'file1.pdf', 'file2.pdf'],
-                             [('file1.pdf', None), ('file2.pdf', range(99, 200))]))
+                         (['file1.pdf', 'file1.pdf', 'file2.pdf'],
+                          [('file1.pdf', None), ('file2.pdf', range(99, 200))]))
 
     def test_pa_purge(self):
         """
@@ -136,41 +131,40 @@ class TestPDFTool(unittest.TestCase):
         Test file & range logic of delete
         """
         page_nums = {'file1.pdf': 16, 'file2.pdf': 32, 'file3.pdf': 1}
-        self.assertEqual(delete(page_nums, 'file3.pdf',
-                                [range(0, 1)]), [[('file3.pdf', [])]])
-        self.assertEqual(delete(page_nums, 'file1.pdf',
-                                [range(0, 1)]), [[('file1.pdf', list(range(1, 16)))]])
-        self.assertEqual(delete(page_nums, 'file1.pdf',
-                                [range(0, 15)]), [[('file1.pdf', list(range(15, 16)))]])
-        self.assertEqual(delete(page_nums, 'file1.pdf',
-                                [range(0, 1), range(15, 16)]), [[('file1.pdf', list(range(1, 15)))]])
-        self.assertEqual(delete(page_nums, 'file2.pdf',
-                                [range(0, 32, 2)]), [[('file2.pdf', list(range(1, 32, 2)))]])
-        self.assertEqual(delete(page_nums, 'file2.pdf',
-                                [range(0, 8), range(24, 32)]), [[('file2.pdf', list(range(8, 24)))]])
-        self.assertEqual(delete(page_nums, 'file2.pdf',
-                                [range(30, 31)]), [[('file2.pdf', list(range(0, 30)) + [31])]])
+        self.assertEqual(delete(page_nums, 'file3.pdf', [range(0, 1)]),
+                         [[('file3.pdf', [])]])
+        self.assertEqual(delete(page_nums, 'file1.pdf', [range(0, 1)]),
+                         [[('file1.pdf', list(range(1, 16)))]])
+        self.assertEqual(delete(page_nums, 'file1.pdf', [range(0, 15)]),
+                         [[('file1.pdf', list(range(15, 16)))]])
+        self.assertEqual(delete(page_nums, 'file1.pdf', [range(0, 1), range(15, 16)]),
+                         [[('file1.pdf', list(range(1, 15)))]])
+        self.assertEqual(delete(page_nums, 'file2.pdf', [range(0, 32, 2)]),
+                         [[('file2.pdf', list(range(1, 32, 2)))]])
+        self.assertEqual(delete(page_nums, 'file2.pdf', [range(0, 8), range(24, 32)]),
+                         [[('file2.pdf', list(range(8, 24)))]])
+        self.assertEqual(delete(page_nums, 'file2.pdf', [range(30, 31)]),
+                         [[('file2.pdf', list(range(0, 30)) + [31])]])
 
     def test_extract(self):
         """
         Test file & range logic of extract
         """
         page_nums = {'file1.pdf': 16, 'file2.pdf': 32, 'file3.pdf': 1}
-        self.assertEqual(extract(page_nums, 'file3.pdf',
-                                 [range(0, 1)]), [[('file3.pdf', [0])]])
-        self.assertEqual(extract(page_nums, 'file1.pdf',
-                                 [range(0, 1)]), [[('file1.pdf', [0])]])
-        self.assertEqual(extract(page_nums, 'file1.pdf',
-                                 [range(0, 15)]), [[('file1.pdf', list(range(0, 15)))]])
-        self.assertEqual(extract(page_nums, 'file1.pdf',
-                                 [range(0, 1), range(15, 16)]), [[('file1.pdf', [0, 15])]])
-        self.assertEqual(extract(page_nums, 'file2.pdf',
-                                 [range(0, 32, 2)]), [[('file2.pdf', list(range(0, 32, 2)))]])
-        self.assertEqual(extract(page_nums, 'file2.pdf',
-                                 [range(0, 8), range(24, 32)]),
+        self.assertEqual(extract(page_nums, 'file3.pdf', [range(0, 1)]),
+                         [[('file3.pdf', [0])]])
+        self.assertEqual(extract(page_nums, 'file1.pdf', [range(0, 1)]),
+                         [[('file1.pdf', [0])]])
+        self.assertEqual(extract(page_nums, 'file1.pdf', [range(0, 15)]),
+                         [[('file1.pdf', list(range(0, 15)))]])
+        self.assertEqual(extract(page_nums, 'file1.pdf', [range(0, 1), range(15, 16)]),
+                         [[('file1.pdf', [0, 15])]])
+        self.assertEqual(extract(page_nums, 'file2.pdf', [range(0, 32, 2)]),
+                         [[('file2.pdf', list(range(0, 32, 2)))]])
+        self.assertEqual(extract(page_nums, 'file2.pdf', [range(0, 8), range(24, 32)]),
                          [[('file2.pdf', list(range(0, 8)) + list(range(24, 32)))]])
-        self.assertEqual(extract(page_nums, 'file2.pdf',
-                                 [range(30, 31)]), [[('file2.pdf', [30])]])
+        self.assertEqual(extract(page_nums, 'file2.pdf', [range(30, 31)]),
+                         [[('file2.pdf', [30])]])
 
     def test_split(self):
         """
