@@ -149,7 +149,7 @@ def verify_file(file: str, files: [str]) -> bool:
     return True
 
 
-def get_range(s: str):
+def get_range(s: str) -> range:
     """
     Parses a string containing a single number or
     two numbers connected with a dash to a range.
