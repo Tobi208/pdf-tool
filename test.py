@@ -64,32 +64,34 @@ class TestPDFTool(unittest.TestCase):
         """
         self.assertFalse(pa(['insert', 'file1.pdf']), 'missing file')
         self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf']), 'missing pos')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '1-5']), 'missing pos')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', 'file3.pdf']), 'missing pos')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '2', 'file3.pdf']), 'missing pos')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf']), 'missing pos')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf', '3-6']), 'missing pos')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '5-10', '2']), 'pos is range > 1')
+        with self.assertRaises(IndexError):
+            pa(['insert', 'file1.pdf', 'file2.pdf', '5', 'file3.pdf'])
+            pa(['insert', 'file1.pdf', 'file2.pdf', '5', 'file3.pdf', '1-5'])
+            pa(['insert', 'file1.pdf', 'file2.pdf', 'file3.pdf'])
+            pa(['insert', 'file1.pdf', 'file2.pdf', '2', 'file3.pdf'])
+            pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf'])
+            pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf', '3-6'])
+            pa(['insert', 'file1.pdf', 'file2.pdf', '5-10', '2'])
         self.assertFalse(pa(['insert', 'file1.pdf', '1', 'file2.pdf']), 'pos instead of file')
         self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '1', '2', '3']), 'too many pos')
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '1']),
-                         (['file1.pdf', 'file2.pdf'], 'file1.pdf', [['file2.pdf', range(0, 1)]]))
+                         (['file1.pdf', 'file2.pdf'], 'file1.pdf', [('file2.pdf', 0, None)]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '1', '5']),
-                         (['file1.pdf', 'file2.pdf'], 'file1.pdf', [['file2.pdf', range(0, 1), range(4, 5)]]))
+                         (['file1.pdf', 'file2.pdf'], 'file1.pdf', [('file2.pdf', 0, range(4, 5))]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5']),
-                         (['file1.pdf', 'file2.pdf'], 'file1.pdf', [['file2.pdf', range(9, 10), range(0, 5)]]))
+                         (['file1.pdf', 'file2.pdf'], 'file1.pdf', [('file2.pdf', 9, range(0, 5))]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', 'file2.pdf', '3']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10)], ['file2.pdf', range(2, 3)]]))
+                          [('file2.pdf', 9, None), ('file2.pdf', 2, None)]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5', 'file2.pdf', '3']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10), range(0, 5)], ['file2.pdf', range(2, 3)]]))
+                          [('file2.pdf', 9, range(0, 5)), ('file2.pdf', 2, None)]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', '1-5', 'file2.pdf', '3', '10-15']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10), range(0, 5)], ['file2.pdf', range(2, 3), range(9, 15)]]))
+                          [('file2.pdf', 9, range(0, 5)), ('file2.pdf', 2, range(9, 15))]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '10', 'file2.pdf', '3', '10-15']),
                          (['file1.pdf', 'file2.pdf', 'file2.pdf'], 'file1.pdf',
-                          [['file2.pdf', range(9, 10)], ['file2.pdf', range(2, 3), range(9, 15)]]))
+                          [('file2.pdf', 9, None), ('file2.pdf', 2, range(9, 15))]))
 
     def test_pa_merge(self):
         """

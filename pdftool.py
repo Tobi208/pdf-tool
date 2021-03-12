@@ -72,21 +72,27 @@ def parse_args(args: [str]):
             filei = xs[i]
             if not verify_file(filei, files):
                 return
-            ts = [filei]
+            ts = (filei, )
             # iterate once or twice further to get <i> or <i> <j-k>
             j = i + 1
-            while j < len(xs) and not xs[j].endswith('.pdf'):
+            if j >= len(xs):
+                raise IndexError('Missing index to insert file: ' + xs[j - 1] + ' at!')
+            try:
+                r_i = list(get_range(xs[j]))
+                ts += (r_i[0],)
+                if len(r_i) != 1:
+                    raise IndexError('Index of where to insert file: ' + xs[j - 1] + ' at can not be a range!')
+            except ValueError:
+                print('Expected format for indices or ranges: i or i-j!')
+            j += 1
+            if j < len(xs) and not xs[j].endswith('.pdf'):
                 try:
-                    ts.append(get_range(xs[j]))
+                    ts += (get_range(xs[j]),)
+                    j += 1
                 except ValueError:
                     print('Expected format for indices or ranges: i or i-j!')
-                j += 1
-            if len(ts) not in [2, 3]:
-                print('Too many or too little index or range arguments for: ' + filei + '!')
-                return
-            if len(ts[1]) > 1:
-                print('File: ' + filei + ' has to be followed by a single index!')
-                return
+            else:
+                ts += (None, )
             i = j
             tss.append(ts)
         return files, file1, tss
