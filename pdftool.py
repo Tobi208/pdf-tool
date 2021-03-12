@@ -205,8 +205,19 @@ def delete(page_nums: {str, int}, file1: str, rs: [range]) -> [[(str, [int])]]:
     return [[(file1, retain)]]
 
 
-def extract():
-    pass
+def extract(page_nums: {str, int}, file1: str, rs: [range]) -> [[(str, [int])]]:
+    """
+    Compile assembly instructions for page extraction
+
+    :param page_nums: dict of number of pages of all files
+    :param file1: file to extract pages from
+    :param rs: list of ranges of pages to be extracted
+    :return: assembly instructions
+    """
+    total_range = range(page_nums[file1])
+    ext_ranges = [i for ext_range in rs for i in ext_range]
+    retain = [i for i in total_range if i in ext_ranges]
+    return [[(file1, retain)]]
 
 
 def insert():
