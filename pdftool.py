@@ -196,6 +196,16 @@ def get_filereaders(fs: [str]) -> {str, PdfFileReader}:
     return files
 
 
+def get_page_nums(frs: {str, PdfFileReader}) -> {str, int}:
+    """
+    Aquire a map of file names to corresponding total page numbers
+
+    :param frs: map of file names to file readers
+    :return: map of file names to total page numbers
+    """
+    return {f: fr.getNumPages() for f, fr in frs.items()}
+
+
 def delete(page_nums: {str, int}, file1: str, rs: [range]) -> [[(str, [int])]]:
     """
     Compile assembly instructions for page deletion
