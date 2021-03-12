@@ -330,6 +330,24 @@ def assemble(filereaders: {str, PdfFileReader}, all_instructions: [[(str, [int])
             writer.write(out)
 
 
+def execute(args):
+    """
+    Execute a pdf action
+
+    :param args: string emulating a command line call
+    """
+
+    args = args.split()
+
+    action = args[0]
+    pa_args = parse_args(args)
+    filereaders = get_filereaders(pa_args[0])
+    page_nums = get_page_nums(filereaders)
+    action_args = [page_nums] + [arg for arg in pa_args[1:]]
+    all_instructions = actions[action](*action_args)
+    assemble(filereaders, all_instructions)
+
+
 actions = {'delete': delete,
            'extract': extract,
            'insert': insert,
@@ -338,4 +356,4 @@ actions = {'delete': delete,
            'split': split}
 
 if __name__ == '__main__':
-    pass
+    execute(' '.join(sys.argv[1:]))
