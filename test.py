@@ -166,6 +166,30 @@ class TestPDFTool(unittest.TestCase):
         self.assertEqual(extract(page_nums, 'file2.pdf', [range(30, 31)]),
                          [[('file2.pdf', [30])]])
 
+    def test_merge(self):
+        """
+        Test file & range logic of merge
+        """
+        page_nums = {'file1.pdf': 16, 'file2.pdf': 32, 'file3.pdf': 1}
+        self.assertEqual(merge(page_nums, [('file1.pdf', None)]),
+                         [[('file1.pdf', list(range(16)))]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', range(0, 1))]),
+                         [[('file1.pdf', [0])]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', range(0, 1)), ('file1.pdf', range(1, 2))]),
+                         [[('file1.pdf', [0]), ('file1.pdf', [1])]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', range(2)), ('file1.pdf', range(2, 4))]),
+                         [[('file1.pdf', [0, 1]), ('file1.pdf', [2, 3])]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', None), ('file2.pdf', None)]),
+                         [[('file1.pdf', list(range(16))), ('file2.pdf', list(range(32)))]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', range(14)), ('file2.pdf', None)]),
+                         [[('file1.pdf', list(range(14))), ('file2.pdf', list(range(32)))]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', None), ('file2.pdf', range(16))]),
+                         [[('file1.pdf', list(range(16))), ('file2.pdf', list(range(16)))]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', range(14)), ('file2.pdf', range(16))]),
+                         [[('file1.pdf', list(range(14))), ('file2.pdf', list(range(16)))]])
+        self.assertEqual(merge(page_nums, [('file1.pdf', range(7, 14)), ('file2.pdf', range(5, 16))]),
+                         [[('file1.pdf', list(range(7, 14))), ('file2.pdf', list(range(5, 16)))]])
+
     def test_split(self):
         """
         Test file & range logic for split

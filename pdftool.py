@@ -224,8 +224,15 @@ def insert():
     pass
 
 
-def merge():
-    pass
+def merge(page_nums: {str, int}, ts: [(str, range)]) -> [[(str, [int])]]:
+    """
+    Compile assembly instructions for page merging
+
+    :param page_nums: dict of number of pages of all files
+    :param ts: collection of files and their ranges to be merged together
+    :return: assembly instructions
+    """
+    return [[(file, list(r)) if r else (file, list(range(page_nums[file]))) for file, r in ts]]
 
 
 def purge():
