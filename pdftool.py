@@ -275,7 +275,6 @@ def assemble(filereaders: {str, PdfFileReader}, all_instructions: [[(str, [int])
             file_out = file_out[:-5] + str(i) + '.pdf'
             i += 1
 
-        # get file writer
         writer = PdfFileWriter()
 
         # instruction = (file, [indices])
@@ -285,7 +284,6 @@ def assemble(filereaders: {str, PdfFileReader}, all_instructions: [[(str, [int])
             for i in r:
                 writer.addPage(filereader.getPage(i))
 
-        # write file
         with open(file_out, 'wb') as out:
             writer.write(out)
 
