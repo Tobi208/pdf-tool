@@ -116,7 +116,8 @@ class TestPDFTool(unittest.TestCase):
                           [('file1.pdf', range(0, 15)), ('file2.pdf', range(99, 200))]))
         self.assertEqual(pa(['merge', 'file1.pdf', 'file2.pdf', '100-200']),
                          (
-                         ['file1.pdf', 'file1.pdf', 'file2.pdf'], [('file1.pdf', None), ('file2.pdf', range(99, 200))]))
+                             ['file1.pdf', 'file1.pdf', 'file2.pdf'],
+                             [('file1.pdf', None), ('file2.pdf', range(99, 200))]))
 
     def test_pa_purge(self):
         """
@@ -170,6 +171,25 @@ class TestPDFTool(unittest.TestCase):
                          [[('file2.pdf', list(range(0, 8)) + list(range(24, 32)))]])
         self.assertEqual(extract(page_nums, 'file2.pdf',
                                  [range(30, 31)]), [[('file2.pdf', [30])]])
+
+    def test_split(self):
+        """
+        Test file & range logic for split
+        """
+        page_nums = {'file1.pdf': 16}
+        self.assertEqual(split(page_nums, 'file1.pdf', [range(8, 9)]),
+                         [[('file1.pdf', list(range(0, 8)))], [('file1.pdf', list(range(8, 16)))]])
+        self.assertEqual(split(page_nums, 'file1.pdf', [range(5, 6), range(10, 11)]),
+                         [[('file1.pdf', list(range(0, 5)))],
+                          [('file1.pdf', list(range(5, 10)))],
+                          [('file1.pdf', list(range(10, 16)))]])
+        self.assertEqual(split(page_nums, 'file1.pdf', [range(5, 10)]),
+                         [[('file1.pdf', list(range(0, 5)))],
+                          [('file1.pdf', list(range(5, 6)))],
+                          [('file1.pdf', list(range(6, 7)))],
+                          [('file1.pdf', list(range(7, 8)))],
+                          [('file1.pdf', list(range(8, 9)))],
+                          [('file1.pdf', list(range(9, 16)))]])
 
     def test_assemble(self):
         """

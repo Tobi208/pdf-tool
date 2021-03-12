@@ -232,8 +232,31 @@ def purge():
     pass
 
 
-def split():
-    pass
+def split(page_nums: {str, int}, file1: str, rs: [range]) -> [[(str, [int])]]:
+    """
+    Compile assembly instructions for page splitting
+
+    :param page_nums: dict of number of pages of all files
+    :param file1: file to be split
+    :param rs: list of ranges of pages to be split at
+    :return: assembly instructions
+    """
+    total_len = page_nums[file1]
+    total_range = range(total_len)
+    spl_ranges = [i for spl_range in rs for i in spl_range]
+    split_at = [i for i in total_range if i in spl_ranges]
+    split_at.sort()
+
+    # create new set of instructions for each split
+    all_instructions = []
+    j = 0
+    for i in split_at:
+        instruction = (file1, list(range(j, i)))
+        all_instructions.append([instruction])
+        j = i
+    all_instructions.append([(file1, list(range(j, total_len)))])
+
+    return all_instructions
 
 
 def assemble(filereaders: {str, PdfFileReader}, all_instructions: [[(str, [int])]]):
