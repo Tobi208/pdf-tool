@@ -133,7 +133,33 @@ class TestPDFTool(unittest.TestCase):
         """
         Test file & range logic of delete
         """
-        pass
+        page_nums = {'file1.pdf': 16, 'file2.pdf': 32, 'file3.pdf': 1}
+        self.assertEqual(delete(page_nums, 'file3.pdf',
+                                [range(0, 1)]), [[('file3.pdf', [])]])
+        self.assertEqual(delete(page_nums, 'file1.pdf',
+                                [range(0, 1)]), [[('file1.pdf', list(range(1, 16)))]])
+        self.assertEqual(delete(page_nums, 'file1.pdf',
+                                [range(0, 15)]), [[('file1.pdf', list(range(15, 16)))]])
+        self.assertEqual(delete(page_nums, 'file1.pdf',
+                                [range(0, 1), range(15, 16)]), [[('file1.pdf', list(range(1, 15)))]])
+        self.assertEqual(delete(page_nums, 'file2.pdf',
+                                [range(0, 32, 2)]), [[('file2.pdf', list(range(1, 32, 2)))]])
+        self.assertEqual(delete(page_nums, 'file2.pdf',
+                                [range(0, 8), range(24, 32)]), [[('file2.pdf', list(range(8, 24)))]])
+        self.assertEqual(delete(page_nums, 'file2.pdf',
+                                [range(30, 31)]), [[('file2.pdf', list(range(0, 30)) + [31])]])
+
+    def test_assemble(self):
+        """
+        Test file assembly from instructions
+        """
+        all_instructions = [
+            [('file1.pdf', [0, 1, 2]), ('file2.pdf', [3, 4, 5])],
+            [('file3.pdf', [11, 10, 9]), ('file2.pdf', [2, 1, 0])]
+        ]
+        filereaders = get_filereaders(['file1.pdf', 'file2.pdf', 'file3.pdf'])
+
+        assemble(filereaders, all_instructions)
 
 
 if __name__ == '__main__':

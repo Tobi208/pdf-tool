@@ -1,7 +1,6 @@
 import os
 import sys
-from typing import List, Dict
-
+from typing import List, Dict, Tuple
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
@@ -192,8 +191,19 @@ def get_filereaders(fs: List[str]) -> Dict[str, PdfFileReader]:
     return files
 
 
-def delete():
-    pass
+def delete(page_nums: Dict[str, int], file1: str, rs: List[range]) -> List[List[Tuple[str, List[int]]]]:
+    """
+    Compile assembly instructions for page deletion
+
+    :param page_nums: dict of number of pages of all files
+    :param file1: file to delete pages from
+    :param rs: list of ranges of pages to be deleted
+    :return: assembly instructions
+    """
+    total_range = range(page_nums[file1])
+    del_ranges = [i for del_range in rs for i in del_range]
+    retain = [i for i in total_range if i not in del_ranges]
+    return [[(file1, retain)]]
 
 
 def extract():
@@ -214,6 +224,37 @@ def purge():
 
 def split():
     pass
+
+
+def assemble(filereaders: Dict[str, PdfFileReader], all_instructions: List[List[Tuple[str, List[int]]]]):
+    """
+    Assemble all files given a list of instructions for each file
+
+    :param filereaders: map of file names to opened file readers
+    :param all_instructions: collection of instructions on how to assemble a file
+    """
+    for instructions in all_instructions:
+
+        # find next free file name
+        file_out = instructions[0][0][:-4] + '_out1.pdf'
+        i = 2
+        while os.path.isfile(file_out):
+            file_out = file_out[:-5] + str(i) + '.pdf'
+            i += 1
+
+        # get file writer
+        writer = PdfFileWriter()
+
+        # instruction = (file, [indices])
+        for file, r in instructions:
+            filereader = filereaders[file]
+            # write pages
+            for i in r:
+                writer.addPage(filereader.getPage(i))
+
+        # write file
+        with open(file_out, 'wb') as out:
+            writer.write(out)
 
 
 actions = {'delete': delete,
