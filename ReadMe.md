@@ -51,6 +51,7 @@ The new file contains all pages of file1 and is expanded with pages from other f
 Accepts a main file and then at least one file + position (+ range) argument.
 The range refers to which pages of the other file are to be inserted and is optional.
 If it is not specified, all pages will be inserted.
+Pages that are specified to be inserted at the same index will be inserted in the order they were specified.
 
 
 ``py pdftool.py insert file1 file2 i``
