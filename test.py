@@ -9,8 +9,11 @@ class TestPDFTool(unittest.TestCase):
         """
         Test verify_file with actual files
         """
-        self.assertFalse(verify_file('notafile.pdf', []), 'file does not exist')
-        self.assertTrue(verify_file('file1.pdf', []), 'file exists')
+        with self.assertRaises(FileNotFoundError):
+            verify_file('notafile.pdf', [])
+        with self.assertRaises(TypeError):
+            verify_file('notapdf.docx', [])
+        self.assertIsNone(verify_file('file1.pdf', []), 'file exists')
 
     def test_get_range(self):
         """
@@ -34,24 +37,28 @@ class TestPDFTool(unittest.TestCase):
         """
         General parse_args test for first two arguments
         """
-        self.assertFalse(pa([]), 'empty arguements')
-        self.assertFalse(pa(['split', 'file1.pdf', '1', 1]), 'not list of strings')
-        self.assertFalse(pa(['file1.pdf']), 'missing action')
-        self.assertFalse(pa(['split']), 'missing file')
-        self.assertFalse(pa(['explode', 'file1.pdf']), 'invalid action')
-        self.assertFalse(pa(['split', 'noafile.pdf']), 'invalid file')
+        with self.assertRaises(TypeError):
+            pa(['split', 'file1.pdf', '1', 1])
+            pa(['split', 'file1.pdf', '1', True])
+        with self.assertRaises(ValueError):
+            pa([])
+            pa(['file1.pdf'])
+            pa(['split'])
+        with self.assertRaises(KeyError):
+            pa(['explode', 'file1.pdf'])
+        with self.assertRaises(FileNotFoundError):
+            pa(['split', 'notafile.pdf'])
 
     def test_pa_delete_extract_split(self):
         """
         Test input for delete, extract, split
         General parse_args, verify_file and get_range related tests not covered here
         """
-        self.assertFalse(pa(['delete', 'file1.pdf']), 'missing range')
-        self.assertFalse(pa(['extract', 'file2.pdf']), 'missing range')
-        self.assertFalse(pa(['split', 'file3.pdf']), 'missing range')
-        self.assertFalse(pa(['delete', 'notafile.pdf', '1']), 'invalid file')
-        self.assertFalse(pa(['extract', 'notafile.pdf', '1']), 'invalid file')
-        self.assertFalse(pa(['split', 'notafile.pdf', '1']), 'invalid file')
+        with self.assertRaises(ValueError):
+            pa(['delete', 'file1.pdf'])
+            pa(['extract', 'file2.pdf'])
+            pa(['split', 'file3.pdf'])
+            pa(['split', 'file2.pdf', 'file3.pdf'])
         self.assertEqual(pa(['delete', 'file1.pdf', '5']), (['file1.pdf'], 'file1.pdf', [range(4, 5)]))
         self.assertEqual(pa(['extract', 'file1.pdf', '1-5']), (['file1.pdf'], 'file1.pdf', [range(0, 5)]))
         self.assertEqual(pa(['split', 'file1.pdf', '1-5', '10']),
@@ -62,18 +69,19 @@ class TestPDFTool(unittest.TestCase):
         Test input for insert
         General parse_args, verify_file and get_range related tests not covered here
         """
-        self.assertFalse(pa(['insert', 'file1.pdf']), 'missing file')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf']), 'missing pos')
-        with self.assertRaises(IndexError):
+        with self.assertRaises(ValueError):
+            pa(['insert', 'file1.pdf'])
+            pa(['insert', 'file1.pdf', 'file2.pdf'])
             pa(['insert', 'file1.pdf', 'file2.pdf', '5', 'file3.pdf'])
-            pa(['insert', 'file1.pdf', 'file2.pdf', '5', 'file3.pdf', '1-5'])
             pa(['insert', 'file1.pdf', 'file2.pdf', 'file3.pdf'])
             pa(['insert', 'file1.pdf', 'file2.pdf', '2', 'file3.pdf'])
             pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf'])
+        with self.assertRaises(TypeError):
+            pa(['insert', 'file1.pdf', 'file2.pdf', '5', 'file3.pdf', '1-5'])
             pa(['insert', 'file1.pdf', 'file2.pdf', '2', '5-10', 'file3.pdf', '3-6'])
             pa(['insert', 'file1.pdf', 'file2.pdf', '5-10', '2'])
-        self.assertFalse(pa(['insert', 'file1.pdf', '1', 'file2.pdf']), 'pos instead of file')
-        self.assertFalse(pa(['insert', 'file1.pdf', 'file2.pdf', '1', '2', '3']), 'too many pos')
+            pa(['insert', 'file1.pdf', '1', 'file2.pdf'])
+            pa(['insert', 'file1.pdf', 'file2.pdf', '1', '2', '3'])
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '1']),
                          (['file1.pdf', 'file2.pdf'], 'file1.pdf', [('file2.pdf', 0, None)]))
         self.assertEqual(pa(['insert', 'file1.pdf', 'file2.pdf', '1', '5']),
@@ -98,9 +106,15 @@ class TestPDFTool(unittest.TestCase):
         Test input for merge
         General parse_args, verify_file and get_range related tests not covered here
         """
-        self.assertFalse(pa(['merge', 'file1.pdf']), 'missing file')
-        self.assertFalse(pa(['merge', 'file1.pdf', '1']), 'missing file')
-        self.assertFalse(pa(['merge', 'file1.pdf', '1', '2', 'file2.pdf']), 'too many indices/ranges')
+        with self.assertRaises(TypeError):
+            pa(['merge', 'file1.pdf', '1', '2', 'file2.pdf'])
+
+        self.assertEqual(pa(['merge', 'file1.pdf']),
+                         (['file1.pdf', 'file1.pdf'], [('file1.pdf', None)]))
+        self.assertEqual(pa(['merge', 'file1.pdf', '2']),
+                         (['file1.pdf', 'file1.pdf'], [('file1.pdf', range(1, 2))]))
+        self.assertEqual(pa(['merge', 'file1.pdf', '2-5']),
+                         (['file1.pdf', 'file1.pdf'], [('file1.pdf', range(1, 5))]))
         self.assertEqual(pa(['merge', 'file1.pdf', 'file2.pdf']),
                          (['file1.pdf', 'file1.pdf', 'file2.pdf'], [('file1.pdf', None), ('file2.pdf', None)]))
         self.assertEqual(pa(['merge', 'file1.pdf', '5', 'file2.pdf']),
@@ -121,8 +135,10 @@ class TestPDFTool(unittest.TestCase):
         Test input for purge
         General parse_args, verify_file and get_range related tests not covered here
         """
-        self.assertFalse(pa(['purge', 'file1.pdf', '1']), 'invalid file')
-        self.assertFalse(pa(['purge', 'file1.pdf', '1', 'file2.pdf']), 'invalid file')
+        with self.assertRaises(TypeError):
+            pa(['purge', 'file1.pdf', '1'])
+            pa(['purge', 'file1.pdf', '1', 'file2.pdf'])
+
         self.assertEqual(pa(['purge', 'file1.pdf']),
                          (['file1.pdf', 'file1.pdf'], ['file1.pdf']))
         self.assertEqual(pa(['purge', 'file1.pdf', 'file2.pdf']),
