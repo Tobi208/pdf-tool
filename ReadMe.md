@@ -81,7 +81,7 @@ Inverse to **Split**.
 
 ## Purge
 
-**This feature is not available implemented yet.**
+**This feature is not available yet.**
 
 Rid each file of redundant incremental pages.
 If your professor likes to export their presentation one page per line of text revealed, this is the tool you are looking for.
