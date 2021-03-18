@@ -1,6 +1,6 @@
 # pdf-tool
 
-Python Command Line Tool to Merge, Insert, Delete, Split, Extract or Purge redundant PDF Pages based on PyPDF2 (and opencv2).
+Python Command Line Tool to Merge, Insert, Delete, Split, Extract or Purge redundant PDF Pages based on PyPDF2.
 
 
 # Command Line Tool
@@ -81,11 +81,12 @@ Inverse to **Split**.
 
 ## Purge
 
+**This feature is not available implemented yet.**
+
 Rid each file of redundant incremental pages.
 If your professor likes to export their presentation one page per line of text revealed, this is the tool you are looking for.
 Pages that are incomplete versions of their subsequent pages are removed.
 Accepts at least one file as argument.
-**This requires the additional installation of opencv2.**
 
 ``py pdftool.py purge file1``
 
