@@ -24,7 +24,7 @@ def parse_args(args: [str]):
     # list of arguments after action
     xs = args[1:]
     # list of necessary files
-    files = []
+    files = set()
     # main file
     file1 = xs[0]
     verify_file(file1, files)
@@ -114,7 +114,7 @@ def parse_args(args: [str]):
         return files, xs
 
 
-def verify_file(file: str, files: [str]):
+def verify_file(file: str, files: set):
     """
     Checks if a file exists in the current folder and appends it to collection
 
@@ -125,7 +125,7 @@ def verify_file(file: str, files: [str]):
         raise TypeError('File is not a pdf: ' + file + '!')
     if not os.path.isfile(file):
         raise FileNotFoundError('File not found: ' + file + '!')
-    files.append(file)
+    files.add(file)
 
 
 def get_range(s: str) -> range:
@@ -154,19 +154,14 @@ def get_range(s: str) -> range:
     return range(i, j)
 
 
-def get_filereaders(fs: [str]) -> {str, PdfFileReader}:
+def get_filereaders(fs: set) -> {str, PdfFileReader}:
     """
     Aquire a map of file names to corresponding file readers
 
-    :param fs: list of files, may contain duplicates
+    :param fs: set of files
     :return: map of file names to corresponding file readers
     """
-    files = {}
-    # can not use dict comprehension, because making identical readers is slow
-    for f in fs:
-        if f not in files:
-            files[f] = PdfFileReader(open(f, 'br'))
-    return files
+    return {f: PdfFileReader(open(f, 'br')) for f in fs}
 
 
 def get_page_nums(frs: {str, PdfFileReader}) -> {str, int}:
